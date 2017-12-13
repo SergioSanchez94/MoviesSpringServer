@@ -39,8 +39,13 @@ public class MoviesAPI {
 	 * @param direccionAPI
 	 * @return ArrayList<Movie>
 	 */
-	public static ArrayList<Movie> getMovies(String direccionAPI) {
-
+	public static ArrayList<Movie> getMovies(String busquedaURL, String year) {
+		
+		busquedaURL = busquedaURL.replace(" ", "%20");
+		String direccionAPI = "https://api.themoviedb.org/3/search/movie?api_key="
+				+ Config.getAPIKEY() + "&language=es-ES&query=" + busquedaURL
+				+ "&page=1&include_adult=false&region=Spain&year="
+				+ year;
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 
 		try {

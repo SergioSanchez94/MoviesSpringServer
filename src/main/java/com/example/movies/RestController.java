@@ -52,10 +52,7 @@ public class RestController {
 	//------API METHODS
 	@RequestMapping("/getMovies")
 	public ArrayList<Movie> getMovies(@RequestParam(value = "busquedaURL") String busquedaURL, @RequestParam(value = "year") String year) throws MalformedURLException {	
-		return MoviesAPI.getMovies("https://api.themoviedb.org/3/search/movie?api_key="
-				+ Config.getAPIKEY() + "&language=es-ES&query=" + busquedaURL
-				+ "&page=1&include_adult=false&region=Spain&year="
-				+ year);
+		return MoviesAPI.getMovies(busquedaURL,year);
 	}
 	
 	@RequestMapping("/getTrailer")
