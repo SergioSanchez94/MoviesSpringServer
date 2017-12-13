@@ -12,6 +12,7 @@ import com.sergiosanchez.connections.Library;
 import com.sergiosanchez.connections.MoviesAPI;
 import com.sergiosanchez.movies.Cast;
 import com.sergiosanchez.movies.Movie;
+import com.sergiosanchez.movies.Response;
 
 @org.springframework.web.bind.annotation.RestController
 public class RestController {
@@ -24,7 +25,7 @@ public class RestController {
 
 	@RequestMapping("/getMovieInfo")
 	public Movie getMovieInfo(@RequestParam(value = "url") String url) throws MalformedURLException {
-		return Downloader.getMovieInfo(url, Config.getIPADDRESS());
+		return Downloader.getMovieInfo(url, Config.getDOMAIN());
 	}
 
 	@RequestMapping("/getMovie")
@@ -58,7 +59,7 @@ public class RestController {
 	}
 	
 	@RequestMapping("/getTrailer")
-	public String getTrailer(@RequestParam(value = "id") int id) throws MalformedURLException {
+	public Response getTrailer(@RequestParam(value = "id") int id) throws MalformedURLException {
 		return MoviesAPI.getTrailer(id);
 	}
 	

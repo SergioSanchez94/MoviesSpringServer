@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import com.sergiosanchez.configuration.Config;
 import com.sergiosanchez.movies.Cast;
 import com.sergiosanchez.movies.Movie;
+import com.sergiosanchez.movies.Response;
 
 /**
  * Clase encargada de realizar peticiones a la API externa de información de
@@ -109,8 +110,9 @@ public class MoviesAPI {
 	 * @return String
 	 * @throws MalformedURLException
 	 */
-	public static String getTrailer(int id) throws MalformedURLException {
+	public static Response getTrailer(int id) throws MalformedURLException {
 
+		Response response = new Response(null, null);
 		String trailer = "";
 		String key = "";
 		HttpURLConnection conn = null;
@@ -148,6 +150,8 @@ public class MoviesAPI {
 					JSONObject resultado = results.getJSONObject(0);
 					key = resultado.getString("key");
 					trailer = "https://www.youtube.com/watch?v=" + key;
+					response.setService("getTrailer");
+					response.setResponse(trailer);
 
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -159,7 +163,7 @@ public class MoviesAPI {
 		}
 		conn.disconnect();
 
-		return trailer;
+		return response;
 	}
 
 	/**
