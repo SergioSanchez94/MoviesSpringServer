@@ -42,6 +42,13 @@ public class MoviesAPI {
 	public static ArrayList<Movie> getMovies(String busquedaURL, String year) {
 		
 		busquedaURL = busquedaURL.replace(" ", "%20");
+		if(busquedaURL.contains("(") && busquedaURL.contains(")")) {
+			busquedaURL = busquedaURL.substring(0, busquedaURL.indexOf("("));
+		}
+		if(busquedaURL.contains("[") && busquedaURL.contains("]")) {
+			busquedaURL = busquedaURL.substring(0, busquedaURL.indexOf("["));
+		}
+		
 		String direccionAPI = "https://api.themoviedb.org/3/search/movie?api_key="
 				+ Config.getAPIKEY() + "&language=es-ES&query=" + busquedaURL
 				+ "&page=1&include_adult=false&region=Spain&year="
