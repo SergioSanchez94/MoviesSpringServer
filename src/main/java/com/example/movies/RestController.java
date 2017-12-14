@@ -29,24 +29,24 @@ public class RestController {
 	}
 
 	@RequestMapping("/getMovie")
-	public String getMovie(@RequestParam(value = "address") String address) throws MalformedURLException {
+	public Response getMovie(@RequestParam(value = "address") String address) throws MalformedURLException {
 		return Downloader.getMovie(Config.getIPADDRESS(), address, Config.getDOMAIN());
 	}
 
 	//------LIBRARY METHODS
 	@RequestMapping("/addFile")
-	public String addFile(@RequestParam(value = "source") String source) throws MalformedURLException {
+	public Response addFile(@RequestParam(value = "source") String source) throws MalformedURLException {
 		return Library.addFile(Config.getIPADDRESS(), source);
 	}
 
 	@RequestMapping("/getInfo")
-	public String getMovieInfo() throws MalformedURLException {
+	public Response getMovieInfo() throws MalformedURLException {
 		return Library.getInfo(Config.getIPADDRESS());
 	}
 
-	@RequestMapping("/removeFile")
-	public String removeFile(@RequestParam(value = "hash") String hash) throws MalformedURLException {
-		return Library.removeFile(Config.getIPADDRESS(), hash);
+	@RequestMapping("/optionFile")
+	public Response optionFile(@RequestParam(value = "hash") String hash, @RequestParam(value = "option") String option) throws MalformedURLException {
+		return Library.optionFile(Config.getIPADDRESS(), hash, option);
 	}
 
 	//------API METHODS

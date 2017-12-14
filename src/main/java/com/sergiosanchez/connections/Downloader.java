@@ -13,6 +13,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import com.sergiosanchez.movies.Movie;
+import com.sergiosanchez.movies.Response;
 
 /**
  * Clase encargada de buscar en Internet la información de las películas oportunas en base al dominio de las propiedades
@@ -223,8 +224,10 @@ public class Downloader {
 	 * @return String url
 	 * @throws MalformedURLException
 	 */
-	public static String getMovie(String ip, String address, String dominio) throws MalformedURLException {
-
+	public static Response getMovie(String ip, String address, String dominio) throws MalformedURLException {
+		
+		Response response = new Response(null,null);
+		
 		IP = ip;
 		DOMINIO = dominio;
 
@@ -277,6 +280,8 @@ public class Downloader {
 					}
 
 					salida = URL;
+					response.setService("getMovie");
+					response.setResponse(salida);
 
 				}
 			}
@@ -284,7 +289,7 @@ public class Downloader {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		return salida;
+		return response;
 	}
 
 }

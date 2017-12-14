@@ -21,6 +21,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.util.EntityUtils;
 
 import com.sergiosanchez.configuration.Config;
+import com.sergiosanchez.movies.Response;
 
 /**
  * Clase encargada de la gestión de la librería local
@@ -40,7 +41,9 @@ public class Library {
 	 * @param source
 	 * @throws Exception
 	 */
-	public static String addFile(String IP,String source){
+	public static Response addFile(String IP,String source){
+		
+		Response responseService = new Response(null,null);
 
         HttpHost targetHost = new HttpHost(IP, Integer.parseInt(Config.getPORT()) , "http");
         String respuesta;
@@ -91,6 +94,8 @@ public class Library {
             sw.close();
             is.close();
             respuesta = sw.toString();
+            responseService.setService("addFile");
+            responseService.setResponse(respuesta);
 
         }catch(Exception e){
         	System.err.println("No se ha podido añadir al archivo a la Biblioteca (posible fallo de conexión)");
@@ -98,7 +103,7 @@ public class Library {
         }finally {
             httpclient.getConnectionManager().shutdown();
         }
-		return respuesta;
+		return responseService;
     }
     
 	/**
@@ -106,7 +111,10 @@ public class Library {
 	 * @param IP
 	 * @return String
 	 */
-    public static String getInfo(String IP) {
+    public static Response getInfo(String IP) {
+    	
+    	Response responseService = new Response(null,null);
+    	
     	 HttpHost targetHost = new HttpHost(IP, Integer.parseInt(Config.getPORT()) , "http");
     	 
     	 	String responseMethod = "";
@@ -156,6 +164,8 @@ public class Library {
              sw.close();
              is.close();
              responseMethod = sw.toString();
+             responseService.setService("getInfo");
+             responseService.setResponse(responseMethod);
 
          } catch (ClientProtocolException e1) {
         	 System.err.println("No se ha podido obtener la información de la Biblioteca (posible fallo de conexión)");
@@ -164,16 +174,19 @@ public class Library {
 		} finally {
              httpclient2.getConnectionManager().shutdown();
          }
-		return responseMethod;
+		return responseService;
     }
     
     /**
-     * Borra una película de la librería
+     * Realiza una acción sobre una película de la librería
      * @param IP
      * @param hash
      * @return String
      */
-    public static String removeFile(String IP, String hash) {
+    public static Response optionFile(String IP, String hash, String option) {
+    	
+    	Response responseService = new Response(null,null);
+    	
    	 HttpHost targetHost = new HttpHost(IP, Integer.parseInt(Config.getPORT()) , "http");
    	 
    	 	String responseMethod = "";
@@ -212,7 +225,8 @@ public class Library {
             String token = t.substring(start,end);
             EntityUtils.consumeQuietly(response.getEntity());
             
-            httpget = new HttpGet("http://"+IP+":"+8080+"/gui/?action=remove&hash="+hash+"&token="+token);
+            //start, remove, stop, pause, unpause, forcestart, recheck, removedata
+            httpget = new HttpGet("http://"+IP+":"+8080+"/gui/?action="+option+"&hash="+hash+"&token="+token);
 	         response = httpclient3.execute(targetHost, httpget, localcontext);
             
             e = response.getEntity();
@@ -223,6 +237,8 @@ public class Library {
             sw.close();
             is.close();
             responseMethod = sw.toString();
+            responseService.setService("removeFile");
+            responseService.setResponse(responseMethod);
 
         } catch (ClientProtocolException e1) {
         	System.err.println("No se ha podido eliminar de la Biblioteca (posible fallo de conexión)");
@@ -231,6 +247,6 @@ public class Library {
 		} finally {
             httpclient3.getConnectionManager().shutdown();
         }
-		return responseMethod;
+		return responseService;
    }
 }
