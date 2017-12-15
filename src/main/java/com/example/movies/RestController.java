@@ -3,6 +3,7 @@ package com.example.movies;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -40,7 +41,7 @@ public class RestController {
 	}
 
 	@RequestMapping("/getInfo")
-	public Response getMovieInfo() throws MalformedURLException {
+	public JSONArray getMovieInfo() throws MalformedURLException {
 		return Library.getInfo(Config.getIPADDRESS());
 	}
 

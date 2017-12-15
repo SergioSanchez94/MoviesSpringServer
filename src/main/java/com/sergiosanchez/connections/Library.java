@@ -23,6 +23,10 @@ import org.apache.http.util.EntityUtils;
 import com.sergiosanchez.configuration.Config;
 import com.sergiosanchez.movies.Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Clase encargada de la gestión de la librería local
  * @author Sergio Sanchez
@@ -42,6 +46,8 @@ public class Library {
 	 * @throws Exception
 	 */
 	public static Response addFile(String IP,String source){
+		
+		source = "http://" + Config.getDOMAIN() + source;
 		
 		Response responseService = new Response(null,null);
 
@@ -111,9 +117,10 @@ public class Library {
 	 * @param IP
 	 * @return String
 	 */
-    public static Response getInfo(String IP) {
+    public static JSONArray getInfo(String IP) {
     	
     	Response responseService = new Response(null,null);
+    	JSONArray torrents = null;
     	
     	 HttpHost targetHost = new HttpHost(IP, Integer.parseInt(Config.getPORT()) , "http");
     	 
@@ -166,6 +173,14 @@ public class Library {
              responseMethod = sw.toString();
              responseService.setService("getInfo");
              responseService.setResponse(responseMethod);
+             JSONObject jsonObject;
+            		 try {
+						jsonObject = new JSONObject(sw.toString());
+						torrents = jsonObject.getJSONArray("torrents");
+					} catch (JSONException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 
          } catch (ClientProtocolException e1) {
         	 System.err.println("No se ha podido obtener la información de la Biblioteca (posible fallo de conexión)");
@@ -174,7 +189,7 @@ public class Library {
 		} finally {
              httpclient2.getConnectionManager().shutdown();
          }
-		return responseService;
+		return torrents;
     }
     
     /**
