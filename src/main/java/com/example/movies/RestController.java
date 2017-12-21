@@ -80,6 +80,12 @@ public class RestController {
 		return MoviesAPI.getTrailer(id);
 	}
 	
+	@RequestMapping("/getRecomendations")
+	@CrossOrigin
+	public  ArrayList<Movie> getRecomendations() throws MalformedURLException {
+		return MoviesAPI.getRecommendations();
+	}
+	
 	@RequestMapping("/getCastList")
 	public ArrayList<Cast> getCastList(@RequestParam(value = "idPelicula") int idPelicula, ServletResponse res) throws MalformedURLException {
 		HttpServletResponse response = (HttpServletResponse) res;

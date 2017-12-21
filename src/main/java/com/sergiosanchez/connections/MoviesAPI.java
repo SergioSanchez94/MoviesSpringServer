@@ -233,4 +233,68 @@ public class MoviesAPI {
 		return castList;
 
 	}
+	
+public static ArrayList<Movie> getRecommendations() {
+		
+		String direccionAPI = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+Config.getAPIKEY()+"&language=es-ES";
+		ArrayList<Movie> movies = new ArrayList<Movie>();
+
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				Movie movie;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray results = jObject.getJSONArray("results");
+
+					for (int i = 0; i < results.length(); i++) {
+						movie = new Movie();
+						JSONObject resultado = results.getJSONObject(i);
+						movie.setName(resultado.getString("title"));
+						movie.setId(resultado.getInt("id"));
+						movie.setDescription(resultado.getString("overview"));
+						movie.setVoteAverage(resultado.getInt("vote_average"));
+						movie.setDate(resultado.getString("release_date"));
+						movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
+						movies.add(movie);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return movies;
+
+	}
 }
