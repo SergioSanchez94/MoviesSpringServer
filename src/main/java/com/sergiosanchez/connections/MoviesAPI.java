@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 import com.sergiosanchez.configuration.Config;
 import com.sergiosanchez.movies.Cast;
+import com.sergiosanchez.movies.Genre;
 import com.sergiosanchez.movies.Movie;
 import com.sergiosanchez.movies.Response;
 
@@ -33,26 +34,24 @@ public class MoviesAPI {
 	public static String DOMINIO;
 
 	/**
-	 * Obtiene un array de objetos Movie con la información de la URL de la API
-	 * que le paseamos por parámetro
+	 * Obtiene un array de objetos Movie con la información de la URL de la API que
+	 * le paseamos por parámetro
 	 * 
 	 * @param direccionAPI
 	 * @return ArrayList<Movie>
 	 */
 	public static ArrayList<Movie> getMovies(String busquedaURL, String year) {
-		
+
 		busquedaURL = busquedaURL.replace(" ", "%20");
-		if(busquedaURL.contains("(") && busquedaURL.contains(")")) {
+		if (busquedaURL.contains("(") && busquedaURL.contains(")")) {
 			busquedaURL = busquedaURL.substring(0, busquedaURL.indexOf("("));
 		}
-		if(busquedaURL.contains("[") && busquedaURL.contains("]")) {
+		if (busquedaURL.contains("[") && busquedaURL.contains("]")) {
 			busquedaURL = busquedaURL.substring(0, busquedaURL.indexOf("["));
 		}
-		
-		String direccionAPI = "https://api.themoviedb.org/3/search/movie?api_key="
-				+ Config.getAPIKEY() + "&language=es-ES&query=" + busquedaURL
-				+ "&page=1&include_adult=false&region=Spain&year="
-				+ year;
+
+		String direccionAPI = "https://api.themoviedb.org/3/search/movie?api_key=" + Config.getAPIKEY()
+				+ "&language=es-ES&query=" + busquedaURL + "&page=1&include_adult=false&region=Spain&year=" + year;
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 
 		try {
@@ -233,10 +232,11 @@ public class MoviesAPI {
 		return castList;
 
 	}
-	
-public static ArrayList<Movie> getPopular() {
-		
-		String direccionAPI = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="+Config.getAPIKEY()+"&language=es-ES";
+
+	public static ArrayList<Movie> getPopular() {
+
+		String direccionAPI = "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key="
+				+ Config.getAPIKEY() + "&language=es-ES";
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 
 		try {
@@ -282,7 +282,7 @@ public static ArrayList<Movie> getPopular() {
 						movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
 						movies.add(movie);
 					}
-					
+
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -298,67 +298,256 @@ public static ArrayList<Movie> getPopular() {
 
 	}
 
-public static ArrayList<Movie> getRecommendations(int idPelicula) {
-	
-	String direccionAPI = "https://api.themoviedb.org/3/movie/"+idPelicula+"/recommendations?api_key="+Config.getAPIKEY()+"&language=es-ES";
-	ArrayList<Movie> movies = new ArrayList<Movie>();
+	public static ArrayList<Movie> getRecommendations(int idPelicula) {
 
-	try {
-		URL url = new URL(direccionAPI);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
+		String direccionAPI = "https://api.themoviedb.org/3/movie/" + idPelicula + "/recommendations?api_key="
+				+ Config.getAPIKEY() + "&language=es-ES";
+		ArrayList<Movie> movies = new ArrayList<Movie>();
 
-		conn.setRequestProperty("Accept", "application/json");
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
 
-		if (conn.getResponseCode() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-		}
+			conn.setRequestProperty("Accept", "application/json");
 
-		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-		String output;
-
-		conn = (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.setRequestProperty("Accept", "application/json");
-
-		if (conn.getResponseCode() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-		}
-
-		br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-		while ((output = br.readLine()) != null) {
-			JSONObject jObject;
-			Movie movie;
-			try {
-				jObject = new JSONObject(output);
-				JSONArray results = jObject.getJSONArray("results");
-
-				for (int i = 0; i < results.length(); i++) {
-					movie = new Movie();
-					JSONObject resultado = results.getJSONObject(i);
-					movie.setName(resultado.getString("title"));
-					movie.setId(resultado.getInt("id"));
-					movie.setDescription(resultado.getString("overview"));
-					movie.setVoteAverage(resultado.getInt("vote_average"));
-					movie.setDate(resultado.getString("release_date"));
-					movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
-					movies.add(movie);
-				}
-				
-			} catch (JSONException e) {
-				e.printStackTrace();
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
 			}
-		}
-	} catch (ProtocolException e1) {
-		e1.printStackTrace();
-	} catch (MalformedURLException e1) {
-		e1.printStackTrace();
-	} catch (IOException e1) {
-		e1.printStackTrace();
-	}
-	return movies;
 
-}
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				Movie movie;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray results = jObject.getJSONArray("results");
+
+					for (int i = 0; i < results.length(); i++) {
+						movie = new Movie();
+						JSONObject resultado = results.getJSONObject(i);
+						movie.setName(resultado.getString("title"));
+						movie.setId(resultado.getInt("id"));
+						movie.setDescription(resultado.getString("overview"));
+						movie.setVoteAverage(resultado.getInt("vote_average"));
+						movie.setDate(resultado.getString("release_date"));
+						movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
+						movies.add(movie);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return movies;
+
+	}
+	
+	public static ArrayList<Genre> getGeneros() {
+
+		String direccionAPI = "https://api.themoviedb.org/3/genre/movie/list?language=es-ES&api_key="+ Config.getAPIKEY();
+		ArrayList<Genre> genres = new ArrayList<Genre>();
+
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				Genre genre;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray genresFound = jObject.getJSONArray("genres");
+
+					for (int i = 0; i < genresFound.length(); i++) {
+						genre = new Genre();
+						JSONObject genreFound = genresFound.getJSONObject(i);
+						genre.setName(genreFound.getString("name"));
+						genre.setId(genreFound.getInt("id"));
+						genres.add(genre);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return genres;
+
+	}
+	
+	public static ArrayList<Movie> getMoviesOf(int idGenre) {
+
+		String direccionAPI = "https://api.themoviedb.org/3/genre/"+idGenre+"/movies?language=es-ES&sort_by=created_at.asc&api_key="+ Config.getAPIKEY();
+		ArrayList<Movie> movies = new ArrayList<Movie>();
+
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				Movie movie;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray results = jObject.getJSONArray("results");
+
+					for (int i = 0; i < results.length(); i++) {
+						movie = new Movie();
+						JSONObject resultado = results.getJSONObject(i);
+						movie.setName(resultado.getString("title"));
+						movie.setId(resultado.getInt("id"));
+						movie.setDescription(resultado.getString("overview"));
+						movie.setVoteAverage(resultado.getInt("vote_average"));
+						movie.setDate(resultado.getString("release_date"));
+						movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
+						movies.add(movie);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return movies;
+
+	}
+	
+	public static ArrayList<Movie> getSimilarMovies(int idMovie) {
+
+		String direccionAPI = "https://api.themoviedb.org/3/movie/"+idMovie+"/similar?language=es-ES&page=1&api_key="+ Config.getAPIKEY();
+		ArrayList<Movie> movies = new ArrayList<Movie>();
+
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				Movie movie;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray results = jObject.getJSONArray("results");
+
+					for (int i = 0; i < results.length(); i++) {
+						movie = new Movie();
+						JSONObject resultado = results.getJSONObject(i);
+						movie.setName(resultado.getString("title"));
+						movie.setId(resultado.getInt("id"));
+						movie.setDescription(resultado.getString("overview"));
+						movie.setVoteAverage(resultado.getInt("vote_average"));
+						movie.setDate(resultado.getString("release_date"));
+						movie.setImg("https://image.tmdb.org/t/p/w500/" + resultado.getString("poster_path"));
+						movies.add(movie);
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return movies;
+
+	}
 }
