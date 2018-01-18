@@ -82,8 +82,14 @@ public class RestController {
 	
 	@RequestMapping("/getRecomendations")
 	@CrossOrigin
-	public  ArrayList<Movie> getRecomendations() throws MalformedURLException {
-		return MoviesAPI.getRecommendations();
+	public  ArrayList<Movie> getRecomendations(@RequestParam(value = "idPelicula") int idPelicula, ServletResponse res) throws MalformedURLException {
+		return MoviesAPI.getRecommendations(idPelicula);
+	}
+	
+	@RequestMapping("/getPopular")
+	@CrossOrigin
+	public  ArrayList<Movie> getPopular() throws MalformedURLException {
+		return MoviesAPI.getPopular();
 	}
 	
 	@RequestMapping("/getCastList")
