@@ -214,7 +214,7 @@ public class MoviesAPI {
 						cast.setId(resultado.getInt("cast_id"));
 						cast.setCharacter(resultado.getString("character"));
 						cast.setActor(resultado.getString("name"));
-						cast.setImg(resultado.getString("profile_path"));
+						cast.setImg("https://image.tmdb.org/t/p/w500" + resultado.getString("profile_path"));
 						castList.add(cast);
 					}
 
