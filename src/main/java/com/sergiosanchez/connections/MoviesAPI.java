@@ -7,7 +7,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -362,10 +368,11 @@ public class MoviesAPI {
 		return movies;
 
 	}
-	
+
 	public static ArrayList<Genre> getGeneros() {
 
-		String direccionAPI = "https://api.themoviedb.org/3/genre/movie/list?language=es-ES&api_key="+ Config.getAPIKEY();
+		String direccionAPI = "https://api.themoviedb.org/3/genre/movie/list?language=es-ES&api_key="
+				+ Config.getAPIKEY();
 		ArrayList<Genre> genres = new ArrayList<Genre>();
 
 		try {
@@ -422,10 +429,11 @@ public class MoviesAPI {
 		return genres;
 
 	}
-	
+
 	public static ArrayList<Movie> getMoviesOf(int idGenre) {
 
-		String direccionAPI = "https://api.themoviedb.org/3/genre/"+idGenre+"/movies?language=es-ES&sort_by=created_at.asc&api_key="+ Config.getAPIKEY();
+		String direccionAPI = "https://api.themoviedb.org/3/genre/" + idGenre
+				+ "/movies?language=es-ES&sort_by=created_at.asc&api_key=" + Config.getAPIKEY();
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 
 		try {
@@ -486,10 +494,11 @@ public class MoviesAPI {
 		return movies;
 
 	}
-	
+
 	public static ArrayList<Movie> getSimilarMovies(int idMovie) {
 
-		String direccionAPI = "https://api.themoviedb.org/3/movie/"+idMovie+"/similar?language=es-ES&page=1&api_key="+ Config.getAPIKEY();
+		String direccionAPI = "https://api.themoviedb.org/3/movie/" + idMovie
+				+ "/similar?language=es-ES&page=1&api_key=" + Config.getAPIKEY();
 		ArrayList<Movie> movies = new ArrayList<Movie>();
 
 		try {
@@ -548,6 +557,114 @@ public class MoviesAPI {
 			e1.printStackTrace();
 		}
 		return movies;
+
+	}
+
+	// 1 = Premiere
+	// 2 = Theatrical (limited)
+	// 3 = Theatrical
+	// 4 = Digital
+	// 5 = Physical
+	// 6 = TV
+	public static Response getDigitalReleaseDate(int idMovie) {
+
+		String direccionAPI = "https://api.themoviedb.org/3/movie/" + idMovie + "/release_dates?api_key="
+				+ Config.getAPIKEY();
+		Response response = new Response("getDigitalReleaseDate", "NOT AVAILABLE");
+
+		String digitalReleaseDate = null;
+
+		try {
+			URL url = new URL(direccionAPI);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.setRequestProperty("Accept", "application/json");
+
+			if (conn.getResponseCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			while ((output = br.readLine()) != null) {
+				JSONObject jObject;
+				try {
+					jObject = new JSONObject(output);
+					JSONArray results = jObject.getJSONArray("results");
+
+					for (int i = 0; i < results.length(); i++) {
+						JSONObject resultado = results.getJSONObject(i);
+
+						JSONArray releases_dates = resultado.getJSONArray("release_dates");
+
+						for (int j = 0; j < releases_dates.length(); j++) {
+							JSONObject release_datesObject = releases_dates.getJSONObject(j);
+
+							int type = release_datesObject.getInt("type");
+
+							if (type == 5) {
+								digitalReleaseDate = release_datesObject.getString("release_date");
+
+								try {
+									DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+											Locale.ENGLISH);
+									Date dateDigital;
+									dateDigital = format.parse(digitalReleaseDate);
+
+									Date currentDate = new Date();
+
+									if (currentDate.after(dateDigital)) {
+										response.setResponse("AVAILABLE");
+									} else {
+
+										// Calendar cal = Calendar.getInstance();
+										// cal.setTime(dateDigital);
+										// int year = cal.get(Calendar.YEAR);
+										// int month = cal.get(Calendar.MONTH);
+										// int day = cal.get(Calendar.DAY_OF_MONTH);
+										//
+										// response.setResponse(day + "-" + (month + 1) + "-" + year);
+									}
+
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+
+								break;
+
+							}
+
+						}
+
+					}
+
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} catch (ProtocolException e1) {
+			e1.printStackTrace();
+		} catch (MalformedURLException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return response;
 
 	}
 }

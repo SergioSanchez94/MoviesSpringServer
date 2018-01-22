@@ -207,5 +207,18 @@ public class RestController {
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		return MoviesAPI.getSimilarMovies(idMovie);
 	}
+	
+	/**
+	 * Return the release date of physical movie.
+	 * @param idMovie
+	 * @return Response
+	 * @throws MalformedURLException
+	 */
+	@RequestMapping("/getDigitalReleaseDate")
+	public Response getDigitalReleaseDate(@RequestParam(value = "idMovie") int idMovie, ServletResponse res) throws MalformedURLException {
+		HttpServletResponse response = (HttpServletResponse) res;
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		return MoviesAPI.getDigitalReleaseDate(idMovie);
+	}
 
 }
